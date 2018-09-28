@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: product
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: hxl2580
+    url: jdbc:mysql://139.196.140.168:3306/SpringCloud_Sell?characterEncoding=utf-8&useSSL=false
+    jpa:
+      show-sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://server1:8761/eureka
+server:
+  port: 8080
