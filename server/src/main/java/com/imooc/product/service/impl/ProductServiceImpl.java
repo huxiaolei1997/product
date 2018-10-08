@@ -1,5 +1,7 @@
 package com.imooc.product.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imooc.product.common.ProductInfoOutput;
 import com.imooc.product.dto.CartDTO;
 import com.imooc.product.dataobject.ProductInfo;
 import com.imooc.product.enums.ProductStatusEnum;
@@ -7,6 +9,11 @@ import com.imooc.product.enums.ResultEnum;
 import com.imooc.product.exception.ProductException;
 import com.imooc.product.repository.ProductInfoRepository;
 import com.imooc.product.service.ProductService;
+import com.imooc.product.utils.JsonUtil;
+import com.netflix.discovery.converters.Auto;
+import com.rabbitmq.tools.json.JSONUtil;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +26,9 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductInfoRepository productInfoRepository;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     @Override
     public List<ProductInfo> findUpAll() {
@@ -49,6 +59,11 @@ public class ProductServiceImpl implements ProductService {
 
             productInfo.setProductStock(result);
             productInfoRepository.save(productInfo);
+
+            // 发送 mq 消息
+            ProductInfoOutput output = new ProductInfoOutput();
+            BeanUtils.copyProperties(productInfo, output);
+            amqpTemplate.convertAndSend("productInfo", JsonUtil.toJson(output));
         }
     }
 }
