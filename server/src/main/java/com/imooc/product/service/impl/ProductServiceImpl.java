@@ -47,12 +47,12 @@ public class ProductServiceImpl implements ProductService {
         List<ProductInfo> productInfoList = decreaseStockProcess(cartDTOList);
 
         // 发送 mq 消息
-        List<ProductInfoOutput> productInfoOutputList = productInfoList.stream().map(e -> {
-            ProductInfoOutput output = new ProductInfoOutput();
-            BeanUtils.copyProperties(e, output);
-            return output;
-        }).collect(Collectors.toList());
-        amqpTemplate.convertAndSend("productInfo", JsonUtil.toJson(productInfoOutputList));
+//        List<ProductInfoOutput> productInfoOutputList = productInfoList.stream().map(e -> {
+//            ProductInfoOutput output = new ProductInfoOutput();
+//            BeanUtils.copyProperties(e, output);
+//            return output;
+//        }).collect(Collectors.toList());
+//        amqpTemplate.convertAndSend("productInfo", JsonUtil.toJson(productInfoOutputList));
     }
 
     @Transactional
